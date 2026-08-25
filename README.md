@@ -14,7 +14,7 @@ Before you quote the client, before you install anything, run the 15 minute read
 |---|---|---|
 | No saved cards, no subscriptions | GREEN | 1 to 2 hours plus testing |
 | Saved cards, no subscriptions | YELLOW | Half a day plus a customer notice |
-| Active subscriptions on the old gateway | RED | 2 to 4 weeks, card re-collection first |
+| Any live recurring billing on the old gateway | RED | 2 to 4 weeks, card re-collection first |
 
 Quoting a RED store as if it were GREEN is how these projects go wrong, and the client remembers who quoted it.
 
