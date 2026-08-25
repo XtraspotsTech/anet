@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout</title>
+  <style>
+    body { font: 16px/1.5 system-ui, sans-serif; max-width: 26rem; margin: 4rem auto; padding: 0 1rem; }
+    label { display: block; margin: 1rem 0 .25rem; font-size: .875rem; }
+    input { width: 100%; padding: .625rem; font-size: 1rem; border: 1px solid #ccc; border-radius: 6px; }
+    button { margin-top: 1.5rem; width: 100%; padding: .75rem; font-size: 1rem; border: 0; border-radius: 6px; background: #111; color: #fff; cursor: pointer; }
+    button[disabled] { opacity: .5; cursor: default; }
+    #status { margin-top: 1rem; font-size: .875rem; }
+    .err { color: #b00020; }
+    .ok { color: #0a7c2f; }
+  </style>
+
+  <!-- Sandbox. Production is https://js.authorize.net/v1/Accept.js -->
+  <script src="https://jstest.authorize.net/v1/Accept.js" charset="utf-8"></script>
+</head>
+<body>
+
+<h1>Checkout</h1>
+<p>Test card 4111 1111 1111 1111, any future expiry, CVV 123.</p>
+
+<!-- No name attributes on the card fields. Without them the browser
+     cannot POST card data to your server even by accident, which is
+     the whole point of Accept.js. -->
+<label>Card number</label>
+<input id="cardNumber" autocomplete="off" placeholder="4111111111111111">
+
+<label>Expiry month</label>
+<input id="expMonth" autocomplete="off" placeholder="12">
+
+<label>Expiry year</label>
+<input id="expYear" autocomplete="off" placeholder="2030">
+
+<label>CVV</label>
+<input id="cardCode" autocomplete="off" placeholder="123">
+
+<button id="payBtn">Pay $19.99</button>
+<p id="status"></p>
+
+<script>
+  // Injected server-side in a real app. The client key is public by design.
+  const AUTH_DATA = {
+    clientKey:  window.ANET_PUBLIC_CLIENT_KEY || 'YOUR_PUBLIC_CLIENT_KEY',
+    apiLoginID: window.ANET_API_LOGIN_ID     || 'YOUR_API_LOGIN_ID'
+  };
+
+  const $ = id => document.getElementById(id);
+  const status = $('status');
+
+  function say(msg, cls) {
+    status.textContent = msg;
+    status.className = cls || '';
+  }
+
+  $('payBtn').addEventListener('click', () => {
+    $('payBtn').disabled = true;
+    say('Processing…');
+
+    Accept.dispatchData({
+      authData: AUTH_DATA,
+      cardData: {
+        cardNumber: $('cardNumber').value.replace(/\s/g, ''),
+        month:      $('expMonth').value,
+        year:       $('expYear').value,
+        cardCode:   $('cardCode').value
+      }
+    }, responseHandler);
+  });
+
+  function responseHandler(response) {
+    if (response.messages.resultCode === 'Error') {
+      say(response.messages.message.map(m => m.text).join(' '), 'err');
+      $('payBtn').disabled = false;
+      return;
+    }
+
+    // opaqueData is a single-use token. It expires in about 15 minutes
+    // and can only be charged once. Send it to your server.
+    charge(response.opaqueData);
+  }
+
+  async function charge(opaqueData) {
+    try {
+      const res = await fetch('/api/charge', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // Amount deliberately not sent. The server owns the price.
+        body: JSON.stringify({ opaqueData, orderId: 'demo-1001' })
+      });
+      const data = await res.json();
+
+      if (data.approved) {
+        say('Approved. Transaction ' + data.transactionId, 'ok');
+      } else {
+        say(data.error || 'Declined', 'err');
+        $('payBtn').disabled = false;
+      }
+    } catch (e) {
+      say('Network error. Please try again.', 'err');
+      $('payBtn').disabled = false;
+    }
+  }
+</script>
+
+</body>
+</html>
