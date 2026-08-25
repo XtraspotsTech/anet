@@ -10,7 +10,7 @@ Platform site with an existing extension: 20 minutes. Custom site with Accept Ho
 
 ### Do I need the merchant account before I can build?
 
-No. Sign up for a free sandbox at https://developer.authorize.net/testaccount/ and build against it today. No underwriting, no bank details, no approval. The merchant account only matters when real money needs somewhere to land.
+No. Sign up for a free sandbox at https://developer.authorize.net/hello_world/sandbox.html and build against it today. No underwriting, no bank details, no approval. The merchant account only matters when real money needs somewhere to land.
 
 ### Accept Hosted or Accept.js?
 

@@ -42,7 +42,7 @@ Accept Hosted is the default. Reach for Accept.js only when the checkout form ha
 
 You do not need the merchant account to build. Get a free sandbox and work against it today.
 
-1. Sandbox account: https://developer.authorize.net/testaccount/
+1. Sandbox account: https://developer.authorize.net/hello_world/sandbox.html
 2. In the sandbox merchant interface, go to **Account, then API Credentials & Keys**
 3. Copy the **API Login ID** and generate a **Transaction Key**
 4. For Accept.js only, also generate a **Public Client Key** on the same page
