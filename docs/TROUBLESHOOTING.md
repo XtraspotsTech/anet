@@ -14,6 +14,12 @@ The number one time-waster. Causes, in order of likelihood:
 
 Run the repo's `scripts/verify-credentials.sh` before debugging anything else. If it returns `resultCode: Ok`, the problem is not authentication and you have just saved an hour.
 
+## E00006 — "The API user name is invalid or not present"
+
+Almost always the first error a developer sees. You copied `.env.example` to `.env` and have not filled it in yet, so the login ID is being sent empty. Fill in `ANET_API_LOGIN_ID` and `ANET_TRANSACTION_KEY`, then run the script again.
+
+If the values are filled in and you still get this, look for a stray quote or a trailing space around the login ID.
+
 ## Cryptic parse error / E00003 on a request that looks fine
 
 The API is XML under a JSON translation layer, so **element order inside the JSON is enforced**, which no other API you use does. If you built the request object yourself and alphabetised or reshuffled fields, that is the bug. Match the order in the API reference exactly, or use an official SDK.
