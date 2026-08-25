@@ -24,6 +24,21 @@ If the values are filled in and you still get this, look for a stray quote or a 
 
 The API is XML under a JSON translation layer, so **element order inside the JSON is enforced**, which no other API you use does. If you built the request object yourself and alphabetised or reshuffled fields, that is the bug. Match the order in the API reference exactly, or use an official SDK.
 
+## "must begin with http:// or https://" on a URL that plainly does
+
+Accept Hosted rejects reserved placeholder domains. A `returnUrl` of
+`https://your-site.example/receipt` is refused outright, and the message you get
+back names the setting rather than the actual problem:
+
+```
+Invalid Setting Value. hostedPaymentReturnOptionsurl must begin with http:// or https://.
+```
+
+The URL obviously does begin with `https://`, so this sends you hunting through
+your string building for a bug that is not there. The real cause is the `.example`
+TLD. Use a real domain, or `https://example.com/...` while testing. Same applies
+to `cancelUrl`.
+
 ## JSON.parse fails on the response
 
 The API prefixes responses with a UTF-8 BOM. Strict parsers choke on it. Strip it before parsing; both code samples in this repo do.

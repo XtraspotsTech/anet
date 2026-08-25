@@ -29,8 +29,13 @@ $payUrl = $env === 'production'
 
 // Replace with your real cart total. Never trust an amount sent from the browser.
 $amount    = '19.99';
-$returnUrl = 'https://your-site.example/receipt';
-$cancelUrl = 'https://your-site.example/cart';
+
+// These must be real, reachable-looking URLs on a normal domain. Authorize.Net
+// rejects reserved placeholder TLDs such as .example, and the error it returns
+// is "must begin with http:// or https://" even when the URL plainly does,
+// which sends you looking in the wrong place entirely.
+$returnUrl = 'https://example.com/receipt';
+$cancelUrl = 'https://example.com/cart';
 
 /**
  * NOTE: the API is XML behind a JSON translation layer, so element order
