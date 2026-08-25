@@ -1,0 +1,33 @@
+name: Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHP syntax
+        run: find . -name '*.php' -not -path './node_modules/*' -print0 | xargs -0 -r -n1 php -l
+
+      - name: Shell syntax
+        run: find . -name '*.sh' -print0 | xargs -0 -r -n1 bash -n
+
+      - name: JavaScript syntax
+        run: find . -name '*.js' -not -path '*/node_modules/*' -print0 | xargs -0 -r -n1 node --check
+
+      # The repo was originally created by a web upload, which silently drops
+      # the executable bit. README tells developers to run this script with
+      # ./scripts/..., so a lost bit means permission denied on their first
+      # command. Fail the build rather than find out from a developer.
+      - name: Scripts are executable
+        run: |
+          fail=0
+          for f in $(find scripts -name '*.sh'); do
+            if [ ! -x "$f" ]; then echo "not executable: $f"; fail=1; fi
+          done
+          exit $fail
